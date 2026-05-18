@@ -8,8 +8,8 @@ new pixel art*.png
 # VS Code
 .vscode/
 
-# Recordings in root
-Recording*
+# Recordings in root (not in mixes/)
+/Recording*
 
 # OS files
 Thumbs.db
