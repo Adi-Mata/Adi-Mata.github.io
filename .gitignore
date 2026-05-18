@@ -1,0 +1,16 @@
+# Large WAV files — don't push these to GitHub
+*.wav
+
+# Old high-res pixel art in root (keep the optimized ones in images/)
+pixel-art-*.png
+new pixel art*.png
+
+# VS Code
+.vscode/
+
+# Recordings in root
+Recording*
+
+# OS files
+Thumbs.db
+.DS_Store
