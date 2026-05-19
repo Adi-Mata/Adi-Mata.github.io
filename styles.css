@@ -444,6 +444,69 @@ a:hover {
   filter: sepia(30%) saturate(100%) hue-rotate(70deg) brightness(0.9);
 }
 
+/* ===== TRACKLIST ===== */
+.tracklist {
+  margin-top: 12px;
+}
+
+.tracklist-toggle {
+  font-family: var(--font-pixel);
+  font-size: 0.45rem;
+  letter-spacing: 2px;
+  color: var(--green);
+  cursor: pointer;
+  padding: 6px 0;
+  text-transform: uppercase;
+}
+
+.tracklist-toggle:hover {
+  text-shadow: 0 0 8px var(--green-glow);
+}
+
+.tracklist-list {
+  margin-top: 10px;
+  padding-left: 20px;
+  list-style: none;
+  counter-reset: track;
+}
+
+.tracklist-list li {
+  counter-increment: track;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  padding: 4px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.tracklist-list li::before {
+  content: counter(track, decimal-leading-zero) ". ";
+  color: var(--text-muted);
+  font-family: var(--font-pixel);
+  font-size: 0.4rem;
+}
+
+.track-time {
+  font-family: var(--font-pixel);
+  font-size: 0.4rem;
+  color: var(--purple);
+  margin-right: 10px;
+}
+
+.tracklist-credit {
+  margin-top: 12px;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.tracklist-credit a {
+  color: var(--green);
+}
+
+.tracklist-credit a:hover {
+  color: #fff;
+  text-shadow: 0 0 6px var(--green-glow);
+}
+
 /* ===== CONTACT ===== */
 .contact {
   background: var(--bg-dark);
