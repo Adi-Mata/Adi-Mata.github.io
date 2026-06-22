@@ -93,9 +93,25 @@ const revealObserver = new IntersectionObserver((entries) => {
   rootMargin: '0px 0px -50px 0px'
 });
 
+// If page loaded with a hash, skip animation for that element
+const hashTarget = window.location.hash ? document.querySelector(window.location.hash) : null;
+
 document.querySelectorAll('.mix-card, .stat, .contact-link').forEach(el => {
-  el.style.opacity = '0';
-  el.style.transform = 'translateY(30px)';
-  el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-  revealObserver.observe(el);
+  if (el === hashTarget) {
+    // Don't hide the targeted element — let the browser scroll to it
+    el.style.opacity = '1';
+    el.style.transform = 'translateY(0)';
+  } else {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(30px)';
+    el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+    revealObserver.observe(el);
+  }
 });
+
+// Scroll to hash after a short delay to ensure layout is ready
+if (hashTarget) {
+  setTimeout(() => {
+    hashTarget.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, 100);
+}
