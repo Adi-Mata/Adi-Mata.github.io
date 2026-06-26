@@ -112,6 +112,8 @@ document.querySelectorAll('.mix-card, .stat, .contact-link').forEach(el => {
 // Scroll to hash after a short delay to ensure layout is ready
 if (hashTarget) {
   setTimeout(() => {
-    hashTarget.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  }, 100);
+    const navHeight = document.getElementById('navbar').offsetHeight;
+    const targetTop = hashTarget.getBoundingClientRect().top + window.scrollY - navHeight - 20;
+    window.scrollTo({ top: targetTop, behavior: 'smooth' });
+  }, 300);
 }

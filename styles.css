@@ -348,6 +348,7 @@ a:hover {
   padding: 24px;
   background: var(--bg-card);
   transition: background 0.2s, box-shadow 0.2s;
+  scroll-margin-top: 80px;
 }
 
 .mix-card:hover {
