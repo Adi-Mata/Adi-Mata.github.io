@@ -117,3 +117,24 @@ if (hashTarget) {
     window.scrollTo({ top: targetTop, behavior: 'smooth' });
   }, 300);
 }
+
+// ===== Share button — copy direct link to clipboard =====
+document.querySelectorAll('.share-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const mixId = btn.getAttribute('data-mix-id');
+    const url = window.location.origin + window.location.pathname + '#' + mixId;
+
+    navigator.clipboard.writeText(url).then(() => {
+      btn.textContent = '✓ Link copied!';
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.innerHTML = '&#128279; Share';
+        btn.classList.remove('copied');
+      }, 2000);
+    }).catch(() => {
+      // Fallback for older browsers
+      btn.textContent = url;
+      btn.classList.add('copied');
+    });
+  });
+});

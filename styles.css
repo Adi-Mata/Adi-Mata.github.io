@@ -508,6 +508,30 @@ a:hover {
   text-shadow: 0 0 6px var(--green-glow);
 }
 
+/* ===== SHARE BUTTON ===== */
+.share-btn {
+  margin-top: 12px;
+  padding: 8px 16px;
+  font-family: var(--font-pixel);
+  font-size: 0.4rem;
+  letter-spacing: 2px;
+  color: var(--text-secondary);
+  background: transparent;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.share-btn:hover {
+  color: var(--green);
+  border-color: var(--green);
+}
+
+.share-btn.copied {
+  color: var(--green);
+  border-color: var(--green);
+}
+
 /* ===== CONTACT ===== */
 .contact {
   background: var(--bg-dark);
