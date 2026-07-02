@@ -96,7 +96,7 @@ const revealObserver = new IntersectionObserver((entries) => {
 // If page loaded with a hash, skip animation for that element
 const hashTarget = window.location.hash ? document.querySelector(window.location.hash) : null;
 
-document.querySelectorAll('.mix-card, .stat, .contact-link').forEach(el => {
+document.querySelectorAll('.mix-card, .stat, .contact-link, .gallery-item').forEach(el => {
   if (el === hashTarget) {
     // Don't hide the targeted element — let the browser scroll to it
     el.style.opacity = '1';
