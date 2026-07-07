@@ -33,48 +33,139 @@ window.addEventListener('scroll', () => {
 
 // ===== Play button triggers audio (with error handling) =====
 let currentlyPlaying = null;
+let currentlyPlayingBtn = null;
 
-document.querySelectorAll('.mix-play-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const card = btn.closest('.mix-card');
-    const audio = card.querySelector('audio');
-    if (!audio) return;
+// ===== Custom Winamp-style audio player =====
+function formatTime(seconds) {
+  if (isNaN(seconds)) return '00:00';
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  return String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
+}
 
+document.querySelectorAll('.mix-player').forEach(audio => {
+  // Hide native player
+  audio.style.display = 'none';
+  audio.removeAttribute('controls');
+
+  // Build custom player
+  const player = document.createElement('div');
+  player.classList.add('custom-player');
+
+  player.innerHTML = `
+    <div class="cp-controls">
+      <button class="cp-play" aria-label="Play">&#9654;</button>
+      <button class="cp-stop" aria-label="Stop">&#9632;</button>
+    </div>
+    <div class="cp-display">
+      <div class="cp-time"><span class="cp-current">00:00</span> / <span class="cp-duration">00:00</span></div>
+      <div class="cp-progress-bar">
+        <div class="cp-progress"></div>
+      </div>
+    </div>
+  `;
+
+  audio.parentNode.insertBefore(player, audio.nextSibling);
+
+  const playBtn = player.querySelector('.cp-play');
+  const stopBtn = player.querySelector('.cp-stop');
+  const progressBar = player.querySelector('.cp-progress-bar');
+  const progress = player.querySelector('.cp-progress');
+  const currentTime = player.querySelector('.cp-current');
+  const duration = player.querySelector('.cp-duration');
+
+  // Update duration when metadata loads
+  audio.addEventListener('loadedmetadata', () => {
+    duration.textContent = formatTime(audio.duration);
+  });
+
+  // Play/Pause
+  playBtn.addEventListener('click', () => {
     if (audio.paused) {
-      // Pause whatever is currently playing
+      // Pause other audio
       if (currentlyPlaying && currentlyPlaying !== audio) {
         currentlyPlaying.pause();
+        if (currentlyPlayingBtn) currentlyPlayingBtn.innerHTML = '&#9654;';
+        // Reset artwork play button
         const prevCard = currentlyPlaying.closest('.mix-card');
-        const prevBtn = prevCard ? prevCard.querySelector('.mix-play-btn') : null;
-        if (prevBtn) prevBtn.innerHTML = '&#9654;';
+        const prevArtBtn = prevCard ? prevCard.querySelector('.mix-play-btn') : null;
+        if (prevArtBtn) prevArtBtn.innerHTML = '&#9654;';
       }
 
-      // Play with error handling — avoids unhandled Promise rejection
-      // if the file is missing or the browser blocks autoplay
-      audio.play()
-        .then(() => {
-          currentlyPlaying = audio;
-          btn.innerHTML = '&#10074;&#10074;';
-        })
-        .catch(() => {
-          // File not found or playback blocked — don't crash, just reset
-          btn.innerHTML = '&#9654;';
-        });
+      audio.play().then(() => {
+        currentlyPlaying = audio;
+        currentlyPlayingBtn = playBtn;
+        playBtn.innerHTML = '&#10074;&#10074;';
+        // Sync artwork play button
+        const card = audio.closest('.mix-card');
+        const artBtn = card ? card.querySelector('.mix-play-btn') : null;
+        if (artBtn) artBtn.innerHTML = '&#10074;&#10074;';
+      }).catch(() => {
+        playBtn.innerHTML = '&#9654;';
+      });
     } else {
       audio.pause();
       currentlyPlaying = null;
-      btn.innerHTML = '&#9654;';
+      currentlyPlayingBtn = null;
+      playBtn.innerHTML = '&#9654;';
+      const card = audio.closest('.mix-card');
+      const artBtn = card ? card.querySelector('.mix-play-btn') : null;
+      if (artBtn) artBtn.innerHTML = '&#9654;';
     }
+  });
+
+  // Stop
+  stopBtn.addEventListener('click', () => {
+    audio.pause();
+    audio.currentTime = 0;
+    currentlyPlaying = null;
+    currentlyPlayingBtn = null;
+    playBtn.innerHTML = '&#9654;';
+    progress.style.width = '0%';
+    currentTime.textContent = '00:00';
+    const card = audio.closest('.mix-card');
+    const artBtn = card ? card.querySelector('.mix-play-btn') : null;
+    if (artBtn) artBtn.innerHTML = '&#9654;';
+  });
+
+  // Progress bar update
+  audio.addEventListener('timeupdate', () => {
+    if (audio.duration) {
+      const pct = (audio.currentTime / audio.duration) * 100;
+      progress.style.width = pct + '%';
+      currentTime.textContent = formatTime(audio.currentTime);
+    }
+  });
+
+  // Click to seek
+  progressBar.addEventListener('click', (e) => {
+    const rect = progressBar.getBoundingClientRect();
+    const pct = (e.clientX - rect.left) / rect.width;
+    audio.currentTime = pct * audio.duration;
+  });
+
+  // Reset on end
+  audio.addEventListener('ended', () => {
+    currentlyPlaying = null;
+    currentlyPlayingBtn = null;
+    playBtn.innerHTML = '&#9654;';
+    progress.style.width = '0%';
+    currentTime.textContent = '00:00';
+    const card = audio.closest('.mix-card');
+    const artBtn = card ? card.querySelector('.mix-play-btn') : null;
+    if (artBtn) artBtn.innerHTML = '&#9654;';
   });
 });
 
-// Reset play button when audio ends
-document.querySelectorAll('.mix-player').forEach(audio => {
-  audio.addEventListener('ended', () => {
-    currentlyPlaying = null;
-    const card = audio.closest('.mix-card');
-    const btn = card ? card.querySelector('.mix-play-btn') : null;
-    if (btn) btn.innerHTML = '&#9654;';
+// Artwork play button — sync with custom player
+document.querySelectorAll('.mix-play-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const card = btn.closest('.mix-card');
+    const player = card.querySelector('.custom-player');
+    if (player) {
+      const playBtn = player.querySelector('.cp-play');
+      playBtn.click();
+    }
   });
 });
 
